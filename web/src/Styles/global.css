@@ -1,11 +1,23 @@
-*{
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    font-family: Roboto, sans-serif;
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: Roboto, sans-serif;
 }
 
-body{
-    color: #e1e1e6;
-    background-color: #121214;
+body {
+  color: #e1e1e6;
+  background-color: #121214;
+}
+
+.contentSigned::before {
+  content: "";
+  height: 100vh;
+  width: 420;
+
+  background: url("./assets/background.svg") no-repeat;
+position: absolute;
+right: -200px;
+top:0;
+
 }
