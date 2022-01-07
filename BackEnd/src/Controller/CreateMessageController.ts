@@ -8,6 +8,10 @@ class CreateMessageController {
       const createMessageService = await new CreateMessageService();
       const response = await createMessageService.execute(message, user_id)
       console.log(response)
+
+
+
+
         return res.status(201).json(response);
 
     } catch (error) {
