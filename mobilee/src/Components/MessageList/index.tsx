@@ -1,20 +1,53 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ScrollView, Text } from "react-native";
-import { Message } from "../Message";
+import { Message, MessageProps } from "../Message";
 import { styles } from "./styles";
+import {io} from "socket.io-client";
 
 import{MESSAGES_EXAMPLE} from "../../utils/messages"
-const teste = MESSAGES_EXAMPLE[0];
+import { api } from "../../services/api";
+let messagesQueque: MessageProps[] = [];
+const socket = io(String(api.defaults.baseURL));
+socket.on('new_message', (newMessage)=>{
+  messagesQueque.push(newMessage);
+  console.log(newMessage);
+})
 export function MessageList() {
+
+  const [currentMessages, setCurrentMessages] = useState<MessageProps[]>([]);
+
+
+  useEffect(()=>{
+    async function fetchMessages(){
+      const messagesResponse = await api.get<MessageProps[]>('/messages/last3');
+      setCurrentMessages(messagesResponse.data);
+    }
+    fetchMessages();
+
+  },[])
+
+  useEffect(()=>{
+    const timer = setInterval(()=>{
+      if(messagesQueque.length > 0){
+          setCurrentMessages(prevState=> [messagesQueque[0], prevState[0], prevState[1]]);
+          messagesQueque.shift();
+      }
+    },3000)
+
+    return ()=> clearInterval(timer);
+
+  },[]);
+
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="never"//Tirar teclado ao tocar na lista
     >
-    <Message data={MESSAGES_EXAMPLE[0]}/>
-    <Message data={MESSAGES_EXAMPLE[1]}/>
-    <Message data={MESSAGES_EXAMPLE[3]}/>
+      {
+        currentMessages.map((msg)=>   <Message data={msg}/>)
+      }
+  
     </ScrollView>
   );
 }
